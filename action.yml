@@ -9,32 +9,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: "Deploy"
+    - name: "Welcome"
       shell: bash
       run: |
-        echo "::group::Initialization"
-
-        function show_hr() {
-          printf '%.s_' {1..100} && echo ""
-        }
-
-        function send_webhook() {
-          local status="$1"
-          local post_data=$(jq --null-input \
-          --arg timestamp `date +%s` \
-          --arg status "${status}" \
-          --arg repository "${{ github.repository }}" \
-          --arg workflow "${{ github.workflow }}" \
-          --arg job "${{ github.job }}" \
-          --arg run_id "${{ github.run_id }}" \
-          --arg ref "${{ github.ref }}" \
-          --arg event_name "${{ github.event_name }}" \
-          --arg actor "${{ github.actor }}" \
-          --arg message "${{ github.event.head_commit.message }}" \
-          --arg revision "${{ github.sha }}" \
-          '{"timestamp": $timestamp, "status": $status, "repository": $repository, "workflow": $workflow, "job": $job, "run_id": $run_id, "ref": $ref, "event_name": $event_name, "actor": $actor, "message": $message, "revision": $revision}')
-
-          curl --data "${post_data}" --header "Content-Type: application/json" --max-time 30 --show-error --silent --user-agent "GitHub Workflow" "${{inputs.webhook}}"
-        }
-
-        [ "${{inputs.webhook}}" != "" ] && echo "Webhook notification (start): $(send_webhook "start")"
+        echo "Welcome ${{ github.event.discussion.title }}"
